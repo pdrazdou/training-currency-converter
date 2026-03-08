@@ -271,4 +271,109 @@ describe('useConverter', () => {
       expect(result.current.result).toBe(null);
     });
   });
+
+  it('should auto-swap currencies when setting To currency same as From', () => {
+    const { result } = renderHook(() => useConverter(mockExchangeRates));
+
+    act(() => {
+      result.current.setFromCurrency('USD');
+      result.current.setToCurrency('EUR');
+    });
+
+    // Verify initial state
+    expect(result.current.fromCurrency).toBe('USD');
+    expect(result.current.toCurrency).toBe('EUR');
+
+    // Change To currency to USD (same as From)
+    act(() => {
+      result.current.setToCurrency('USD');
+    });
+
+    // Should auto-swap: From becomes EUR, To becomes USD
+    expect(result.current.fromCurrency).toBe('EUR');
+    expect(result.current.toCurrency).toBe('USD');
+  });
+
+  it('should auto-swap currencies when setting From currency same as To', () => {
+    const { result } = renderHook(() => useConverter(mockExchangeRates));
+
+    act(() => {
+      result.current.setFromCurrency('USD');
+      result.current.setToCurrency('EUR');
+    });
+
+    // Verify initial state
+    expect(result.current.fromCurrency).toBe('USD');
+    expect(result.current.toCurrency).toBe('EUR');
+
+    // Change From currency to EUR (same as To)
+    act(() => {
+      result.current.setFromCurrency('EUR');
+    });
+
+    // Should auto-swap: From becomes EUR, To becomes USD
+    expect(result.current.fromCurrency).toBe('EUR');
+    expect(result.current.toCurrency).toBe('USD');
+  });
+
+  it('should not swap if new To currency differs from From', () => {
+    const { result } = renderHook(() => useConverter(mockExchangeRates));
+
+    act(() => {
+      result.current.setFromCurrency('USD');
+      result.current.setToCurrency('EUR');
+    });
+
+    // Change To currency to GBP (different from USD)
+    act(() => {
+      result.current.setToCurrency('GBP');
+    });
+
+    // Should not swap: both currencies should change normally
+    expect(result.current.fromCurrency).toBe('USD');
+    expect(result.current.toCurrency).toBe('GBP');
+  });
+
+  it('should not swap if new From currency differs from To', () => {
+    const { result } = renderHook(() => useConverter(mockExchangeRates));
+
+    act(() => {
+      result.current.setFromCurrency('USD');
+      result.current.setToCurrency('EUR');
+    });
+
+    // Change From currency to GBP (different from EUR)
+    act(() => {
+      result.current.setFromCurrency('GBP');
+    });
+
+    // Should not swap: both currencies should change normally
+    expect(result.current.fromCurrency).toBe('GBP');
+    expect(result.current.toCurrency).toBe('EUR');
+  });
+
+  it('should perform correct conversion after auto-swap', async () => {
+    const { result } = renderHook(() => useConverter(mockExchangeRates));
+
+    act(() => {
+      result.current.setAmount('100');
+      result.current.setFromCurrency('USD');
+      result.current.setToCurrency('EUR');
+    });
+
+    await waitFor(() => {
+      expect(result.current.result).toBe(85); // 100 USD to EUR
+    });
+
+    // Change To to USD (trigger auto-swap to EUR->USD)
+    act(() => {
+      result.current.setToCurrency('USD');
+    });
+
+    await waitFor(() => {
+      // Should now convert 100 EUR to USD: (100 / 0.85) = 117.65
+      expect(result.current.result).toBeCloseTo(117.65, 1);
+    });
+  });
 });
+
