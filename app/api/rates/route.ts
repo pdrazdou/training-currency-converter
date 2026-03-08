@@ -11,6 +11,29 @@ const API_SOURCES = [
       rates: { USD: 1, ...data.rates }, // Add USD since it's not included
     }),
   },
+  {
+    name: 'open.er-api.com',
+    url: 'https://open.er-api.com/v6/latest/USD',
+    transform: (data: any) => ({
+      base: 'USD',
+      rates: data.rates,
+    }),
+  },
+  {
+    name: 'cdn.jsdelivr.net/npm/@fawazahmed0',
+    url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json',
+    transform: (data: any) => {
+      if (!data.usd || typeof data.usd !== 'object') {
+        throw new Error('Unexpected response structure from @fawazahmed0 API');
+      }
+      const usdRates = data.usd as Record<string, number>;
+      const rates: Record<string, number> = {};
+      for (const [code, rate] of Object.entries(usdRates)) {
+        rates[code.toUpperCase()] = rate;
+      }
+      return { base: 'USD', rates };
+    },
+  },
 ];
 
 /**
