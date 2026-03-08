@@ -19,6 +19,9 @@
 .DS_Store
 *.pem
 
+# AI agent session logs (temporary, not for version control)
+copilot_session.log
+
 # debug
 npm-debug.log*
 yarn-debug.log*
