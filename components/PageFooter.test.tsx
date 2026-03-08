@@ -12,7 +12,7 @@ describe('PageFooter', () => {
   });
 
   it('should display copyright notice with current year', () => {
-    const mockDate = new Date('2024-01-01T00:00:00Z');
+    const mockDate = new Date(2024, 0, 1);
     jest.useFakeTimers().setSystemTime(mockDate);
 
     render(<PageFooter />);
