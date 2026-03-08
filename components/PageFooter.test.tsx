@@ -2,16 +2,23 @@ import { render, screen } from '@testing-library/react';
 import PageFooter from './PageFooter';
 
 describe('PageFooter', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should display exchange rates update message', () => {
     render(<PageFooter />);
     expect(screen.getByText('Exchange rates are updated hourly')).toBeInTheDocument();
   });
 
   it('should display copyright notice with current year', () => {
+    const mockDate = new Date('2024-01-01T00:00:00Z');
+    jest.useFakeTimers().setSystemTime(mockDate);
+
     render(<PageFooter />);
-    const currentYear = new Date().getFullYear();
+
     expect(
-      screen.getByText(`© ${currentYear} Godel Technologies. All rights reserved.`)
+      screen.getByText('© 2024 Godel Technologies. All rights reserved.')
     ).toBeInTheDocument();
   });
 
