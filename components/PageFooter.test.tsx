@@ -8,11 +8,19 @@ describe('PageFooter', () => {
   });
 
   it('should display the copyright notice with the current year', () => {
-    render(<PageFooter />);
-    const currentYear = new Date().getFullYear();
-    expect(
-      screen.getByText(`© ${currentYear} Godel Technologies. All rights reserved.`)
-    ).toBeInTheDocument();
+    jest.useFakeTimers();
+    const fixedDate = new Date('2024-01-01T00:00:00Z');
+    jest.setSystemTime(fixedDate);
+
+    try {
+      render(<PageFooter />);
+      const currentYear = fixedDate.getFullYear();
+      expect(
+        screen.getByText(`© ${currentYear} Godel Technologies. All rights reserved.`)
+      ).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('should not display last updated when lastUpdated is not provided', () => {
