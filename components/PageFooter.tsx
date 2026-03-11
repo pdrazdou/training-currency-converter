@@ -13,7 +13,7 @@ export default function PageFooter({ lastUpdated }: PageFooterProps) {
           Last updated: {new Date(lastUpdated).toLocaleString()}
         </p>
       )}
-      <p className="mt-3 pt-3 border-t border-gray-200">
+      <p className="mt-3 pt-3 border-t border-gray-200" suppressHydrationWarning>
         &copy; {currentYear} Godel Technologies. All rights reserved.
       </p>
     </div>
