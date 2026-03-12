@@ -19,11 +19,18 @@ describe('PageFooter', () => {
   });
 
   it('should display copyright notice with current year', () => {
-    render(<PageFooter />);
-    const currentYear = new Date().getFullYear();
-    expect(
-      screen.getByText(`© ${currentYear} Godel Technologies. All rights reserved.`)
-    ).toBeInTheDocument();
+    const fixedYear = 2026;
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+
+    try {
+      render(<PageFooter />);
+      expect(
+        screen.getByText(`© ${fixedYear} Godel Technologies. All rights reserved.`)
+      ).toBeInTheDocument();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('should have accessible copyright notice', () => {
